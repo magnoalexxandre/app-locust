@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  name: locust-master
+spec:
+  selector:
+    matchLabels:
+      app: locust-master
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: locust-master
+    spec:
+      terminationGracePeriodSeconds: 5
+      restartPolicy: Always
+      containers:
+      - name: master
+        image: gcr.io/shenxiang-gcp-solution/loadgenerator:v0.1.0
+        env:
+        - name: FRONTEND_ADDR
+          value: "frontend:80"
+        - name: USERS
+          value: "10"
+        volumeMounts:
+          - mountPath: /home/locust
+            name: locust-scripts
+        resources:
+          requests:
+            cpu: 300m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+      volumes:
+      - name: locust-scripts
+        configMap:
+          name: scripts-cm
+

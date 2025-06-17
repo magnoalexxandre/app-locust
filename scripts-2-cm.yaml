@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scripts-2-cm
+data:
+  locustfile.py: |-
+    from locust import HttpUser, task, between, TaskSet
+    import random
+
+    class HelpdeskBehavior(TaskSet):
+
+        @task(5)
+        def access_homepage(self):
+            # Requisição para a página inicial do helpdesk GLPI
+            self.client.get("/helpdesk")
+
+        @task(3)
+        def access_ticket_page(self):
+            # Simula o acesso a uma página de ticket (exemplo)
+            ticket_id = random.randint(1, 500)  # IDs aleatórios para diferentes tickets
+            self.client.get(f"/helpdesk/front/ticket.form.php?id={ticket_id}")
+
+        @task(2)
+        def access_other_pages(self):
+            # Acessa outras rotas possíveis do GLPI
+            pages = [
+                "/helpdesk/front/ticket.list.php",
+                "/helpdesk/front/central.php",
+                "/helpdesk/front/helpdesk.php"
+            ]
+            page = random.choice(pages)
+            self.client.get(page)
+
+    class HelpdeskUser(HttpUser):
+        tasks = [HelpdeskBehavior]
+        wait_time = between(0.1, 0.3)  # Intervalo curto entre requisições para gerar carga de estresse
+

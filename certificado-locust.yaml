@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: locust-certificado
+  namespace: infra-ns
+spec:
+  secretName: locust-tls-secret # Nome do segredo onde o certificado será armazenado
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: locust.deinfra.sc.gov.br
+  dnsNames:
+    - locust.deinfra.sc.gov.br
+
